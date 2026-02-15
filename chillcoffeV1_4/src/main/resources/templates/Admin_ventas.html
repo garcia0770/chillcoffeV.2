@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial de Ventas - ChillCoffe Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}"> 
+    <style>
+        /* Estilos base para la vista de Administrador */
+        body { font-family: sans-serif; background-color: #f4f4f4; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
+        .ventas-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .ventas-table th, .ventas-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .ventas-table th { background-color: #A0522D; color: white; }
+        .ventas-table tr:nth-child(even) { background-color: #f9f9f9; }
+        .search-form { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; }
+        /* Estilos para el resumen total y paginación */
+        .summary { margin-top: 20px; padding: 10px; background-color: #fff3e0; border-radius: 5px; text-align: right; font-weight: bold; }
+        .pagination-controls { display: flex; justify-content: center; margin-top: 20px; gap: 10px; }
+        .pagination-controls a, .pagination-controls span { padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; color: #8B4513; border-radius: 3px; }
+        .pagination-controls .active { background-color: #8B4513; color: white; }
+    </style>
+</head>
+<body>
+    <header style="background-color: #A0522D; color: white; padding: 15px; text-align: center;">
+        <div class="header-content">
+            <h1 style="margin: 0;">Historial de Ventas</h1>
+            <a th:href="@{/admin}" style="background-color: #8B4513; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px;">← Volver al Panel de Admin</a>
+        </div>
+    </header>
+    
+    <div th:if="${msg}" style="color: green; text-align: center; margin: 10px 0;" th:text="${msg}"></div>
+    <div th:if="${error}" style="color: red; text-align: center; margin: 10px 0;" th:text="${error}"></div>
+
+    <div class="container">
+        
+        <form th:action="@{/admin/ventas}" method="get" class="search-form">
+            <input type="text" name="search" th:value="${terminoBusqueda}" placeholder="Buscar por producto, vendedor o cliente" style="padding: 8px; width: 300px;">
+            <button type="submit" style="padding: 8px 15px; background-color: #8B4513; color: white; border: none; cursor: pointer; border-radius: 3px;">Buscar</button>
+            <a th:href="@{/admin/ventas}" style="margin-left: 10px; color: #8B4513;">Mostrar Todo</a>
+        </form>
+
+        <h2>Registros de Ventas</h2>
+        
+        <div th:if="${#lists.isEmpty(ventas ?: {})}">
+            <p>No se encontraron registros de ventas.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(ventas ?: {})}">
+            <div th:with="totalVentasGlobal=0.0"> 
+            
+            <table class="ventas-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha/Hora</th>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                        <th>Precio Unitario</th>
+                        <th>Total Venta</th>
+                        <th>Vendedor</th>
+                        <th>Cliente</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="venta : ${ventas}">
+                        <td th:text="${venta.id}">1</td>
+                        <td th:text="${venta.fecha != null ? #temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm') : 'N/A'}">02/12/2025 14:50</td>
+                        <td th:text="${venta.producto}">Café Latte</td>
+                        <td th:text="${venta.cantidad ?: 0}">2</td>
+                        <td th:text="'$ ' + ${#numbers.formatDecimal(venta.precioUnitario ?: 0, 1, 'POINT', 0, 'COMMA')}"></td>
+                        
+                        <td th:with="precio=${venta.precioUnitario ?: 0.0}, cantidad=${venta.cantidad ?: 0}, total=${precio * cantidad}" 
+                            th:text="'$ ' + ${#numbers.formatDecimal(total, 1, 'POINT', 0, 'COMMA')} + ' COP'">
+                            <div th:replace="~{:: acumularTotal(${total})}"></div>
+                        </td>
+                        
+                        <td th:text="${venta.usuario}">Admin</td>
+                        <td th:text="${venta.rol}">Cliente X</td>
+                        <td>
+                            <form th:action="@{/admin/ventas/eliminar/{id}(id=${venta.id})}" method="post" 
+                                th:onsubmit="|return confirm('¿Estás seguro de que quieres eliminar la venta ID ' + ${venta.id} + '?');|">
+                                <button type="submit" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px;">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div th:with="totalVentas=${totalVentasGlobal ?: 0.0}">
+                <div class="summary">
+                    Total de Ventas Mostradas: <span th:text="'$ ' + ${#numbers.formatDecimal(totalVentas, 1, 'POINT', 0, 'COMMA')} + ' COP'">$ 10.000 COP</span>
+                </div>
+            </div>
+
+            <div th:fragment="acumularTotal(monto)">
+                <div th:with="totalVentasGlobal=${(totalVentasGlobal ?: 0.0) + (monto ?: 0.0)}"></div>
+            </div>
+
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

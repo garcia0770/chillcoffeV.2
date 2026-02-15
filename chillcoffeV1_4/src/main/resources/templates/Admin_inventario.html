@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Administración de Inventario - ChillCoffe Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <style>
+        /* Estilos base para la vista de Administrador */
+        body { font-family: sans-serif; background-color: #f4f4f4; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        
+        /* HEADER y Navegación */
+        header { 
+            background-color: #A0522D; /* Café oscuro */
+            color: white; 
+            padding: 15px; 
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 { margin: 0; }
+        header p { margin: 0; }
+        header a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            background-color: #8B4513; /* Marrón de botón */
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        header a:hover {
+            background-color: #69340f;
+        }
+        
+        /* Formularios de Añadir/Modificar */
+        form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            background-color: #fff3e0; /* Fondo crema suave */
+        }
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            flex-grow: 1;
+        }
+        
+        /* Estilo general de botones */
+        button[type="submit"] {
+            padding: 8px 15px; 
+            background-color: #8B4513; /* Marrón de botón */
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 3px;
+            transition: background-color 0.3s;
+            white-space: nowrap; /* Evita que el texto del botón se rompa */
+        }
+        button[type="submit"]:hover {
+            background-color: #69340f;
+        }
+
+        /* Tabla de Inventario */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 10px; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #A0522D; 
+            color: white; 
+        }
+        tr:nth-child(even) { 
+            background-color: #f9f9f9; 
+        }
+        
+        /* Estilos de Acciones en la Tabla */
+        td form {
+            padding: 0;
+            margin: 0;
+            border: none;
+            background: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Botón de Eliminar (color rojo) */
+        .btn-eliminar {
+            background-color: red; 
+        }
+        .btn-eliminar:hover {
+            background-color: #cc0000;
+        }
+
+        /* Mensajes de Alerta */
+        .alert {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .alert-success {
+            background-color: #e6ffe6;
+            color: green;
+            border: 1px solid green;
+        }
+        .alert-error {
+            background-color: #ffe6e6;
+            color: red;
+            border: 1px solid red;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Panel de Inventario</h1>
+        <p>Bienvenido, <span th:text="${nombre}">Admin</span>. <a href="/logout" style="background-color: #A0522D;">Salir</a></p>
+        <a th:href="@{/admin}">Volver al Panel</a>
+    </header>
+
+    <div class="container">
+        
+        <div th:if="${mensaje}" class="alert" th:classappend="${mensaje.contains('éxito') ? 'alert-success' : 'alert-error'}">
+            <p th:text="${mensaje}"></p>
+        </div>
+        
+        <h2>Añadir/Modificar Producto</h2>
+        <form th:action="@{/admin/inventario/guardar}" method="post">
+            <input type="text" name="nombre" placeholder="Nombre del Producto" required>
+            <input type="number" name="stock" placeholder="Stock Actual" required>
+            <input type="number" name="precio" placeholder="Precio ($)" required>
+            <button type="submit">Guardar Producto</button>
+        </form>
+
+        <h2>Inventario Actual</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Stock</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="producto : ${productos}">
+                    <td th:text="${producto.nombre}">Café</td>
+                    
+                    <td>
+                        <form th:action="@{/admin/inventario/actualizarstock}" method="post" style="display:inline;">
+                            <input type="hidden" name="nombre" th:value="${producto.nombre}" />
+                            <input type="number" name="stock" th:value="${producto.stock}" style="width: 60px;" required />
+                            <button type="submit">Actualizar Stock</button>
+                        </form>
+                    </td>
+
+                    <td th:text="'$ ' + ${producto.precio}">$ 2000</td>
+                    
+                    <td>
+                        <form th:action="@{/admin/inventario/eliminar}" method="post" style="display:inline;"
+                            th:attr="onsubmit=|return confirm('¿Está seguro de que desea eliminar ${producto.nombre}?');|">
+                            <input type="hidden" name="nombre" th:value="${producto.nombre}" />
+                            <button type="submit" class="btn-eliminar">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                
+                <tr th:if="${productos == null or productos.empty}">
+                    <td colspan="4" style="text-align: center;">No hay productos en el inventario.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

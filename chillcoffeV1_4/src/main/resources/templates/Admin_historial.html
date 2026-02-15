@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <title>Historial de Órdenes</title>
+</head>
+<body>
+  <h1>Historial de Órdenes</h1>
+  <a th:href="@{/admin/panel}">Volver al panel</a>
+  <table>
+    <thead>
+      <tr><th>ID historial</th><th>ID original</th><th>Nombre</th><th>Creado</th><th>Procesado</th><th>Acción</th></tr>
+    </thead>
+    <tbody>
+      <tr th:each="h : ${historial}">
+        <td th:text="${h.id}">1</td>
+        <td th:text="${h.originalOrderId}">10</td>
+        <td th:text="${h.nombre}">Café</td>
+        <td th:text="${h.creadoEn != null ? #temporals.format(h.creadoEn,'dd/MM/yyyy HH:mm:ss') : ''}">-</td>
+        <td th:text="${h.procesadoEn != null ? #temporals.format(h.procesadoEn,'dd/MM/yyyy HH:mm:ss') : ''}">-</td>
+        <td th:text="${h.action}">CREATED</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

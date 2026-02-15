@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar contraseña</title>
+    <link rel="stylesheet" th:href="@{/css/Login.css}">
+</head>
+
+<body>
+<div class="contenedor">
+    <div class="fondo" aria-hidden="true" style="background-image: url('/imagenes/FondoPrueba2.jpg');"></div>
+
+    <main class="contenido">
+        <section class="tarjeta-login">
+            <h2>Recuperar contraseña</h2>
+
+            <p class="texto-info">Ingresa el correo asociado a tu cuenta para enviarte el enlace de recuperación.</p>
+
+            <form th:action="@{/recuperar}" method="post">
+                <label for="correo">Correo electrónico</label>
+                <input type="email" id="correo" name="correo" class="entrada" required>
+
+                <button type="submit" class="btn btn-principal">Enviar enlace</button>
+
+                <!-- ERRORES -->
+                <div th:if="${error}" class="error">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <!-- MENSAJE -->
+                <div th:if="${mensaje}" class="mensaje exito">
+                    <p th:text="${mensaje}"></p>
+                </div>
+
+                <!-- 🔥 LINK TEMPORAL PARA PRUEBAS (solo aparece si se genera token) -->
+                <div th:if="${debugLink}" class="mensaje" style="margin-top: 15px;">
+                    <p><strong>Enlace directo de recuperación:</strong></p>
+                    <a th:href="${debugLink}" th:text="${debugLink}" style="color: #00c3ff;"></a>
+                </div>
+
+            </form>
+
+            <!-- BOTÓN VOLVER SOLO CUANDO toque -->
+            <div th:if="${volverLogin}" style="margin-top: 20px;">
+                <a th:href="@{/}" class="link-recuperar">Volver al inicio de sesión</a>
+            </div>
+
+        </section>
+    </main>
+</div>
+</body>
+</html>

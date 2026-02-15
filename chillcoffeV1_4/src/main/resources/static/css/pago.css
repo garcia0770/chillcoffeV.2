@@ -1,0 +1,234 @@
+/* ----------------------------------------- */
+/*   ESTILOS GENERALES                       */
+/* ----------------------------------------- */
+
+body {
+    background: #f2e8df;
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    padding: 30px;
+}
+
+.titulo {
+    text-align: center;
+    color: #7a4a24;
+    font-size: 42px;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* ----------------------------------------- */
+/*   CONTENEDOR GENERAL                      */
+/* ----------------------------------------- */
+
+.payment-container {
+    width: 900px;
+    margin: auto;
+    background: #fff;
+    border-radius: 22px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+/* ----------------------------------------- */
+/*   TABS / OPCIONES                         */
+/* ----------------------------------------- */
+
+.payment-tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.tab {
+    width: 30%;
+}
+
+.tab input {
+    display: none;
+}
+
+.tab-btn {
+    display: block;
+    text-align: center;
+    padding: 14px 0;
+    background: #f3d9c0;
+    border-radius: 12px;
+    color: #704321;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 2px solid transparent;
+}
+
+.tab-btn:hover {
+    background: #e3c3a4;
+}
+
+/* Cuando el tab está seleccionado */
+#tab-tarjeta:checked + .tab-btn,
+#tab-efectivo:checked + .tab-btn,
+#tab-nequi:checked + .tab-btn {
+    background: #b07341;
+    color: white;
+    border-color: #8e5529;
+}
+
+/* ----------------------------------------- */
+/*   PANELES (OCULTOS POR DEFECTO)           */
+/* ----------------------------------------- */
+
+.panels {
+    margin-top: 20px;
+}
+
+.panel {
+    display: none;
+    background: #fff8ec;
+    padding: 25px;
+    border-radius: 14px;
+    border-left: 6px solid #c69462;
+    animation: slide 0.4s ease;
+}
+
+@keyframes slide {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Mostrar panel correspondiente */
+
+#tab-tarjeta:checked ~ .panels .panel-tarjeta {
+    display: block;
+}
+
+#tab-efectivo:checked ~ .panels .panel-efectivo {
+    display: block;
+}
+
+#tab-nequi:checked ~ .panels .panel-nequi {
+    display: block;
+}
+
+/* ----------------------------------------- */
+/*   CAMPOS DE FORMULARIO                    */
+/* ----------------------------------------- */
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    font-weight: 600;
+    color: #6b4325;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 2px solid #d6c3b1;
+    margin-top: 5px;
+}
+
+.input-group input:focus {
+    border-color: #b07341;
+    outline: none;
+}
+
+.flex {
+    display: flex;
+    gap: 20px;
+}
+
+.half {
+    width: 50%;
+}
+
+.panel-desc {
+    margin-top: -5px;
+    font-size: 15px;
+    color: #8c6d55;
+}
+
+/* ----------------------------------------- */
+/*   QR                                      */
+/* ----------------------------------------- */
+
+.qr-card {
+    background: rgba(255,255,255,0.7);
+    border-radius: 20px;
+    padding: 25px;
+    width: 260px;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+    margin: 20px auto;
+}
+
+.qr-card img {
+    width: 100%;
+}
+
+.qr-text {
+    text-align: center;
+    color: #8a6c50;
+}
+
+/* ----------------------------------------- */
+/*   RECIBO                                  */
+/* ----------------------------------------- */
+
+.receipt {
+    background: #fff3df;
+    padding: 20px;
+    border-radius: 16px;
+    margin-top: 30px;
+    border: 2px solid #e3c7a6;
+}
+
+.receipt h3 {
+    margin-top: 0;
+    color: #7a4a24;
+}
+
+.price {
+    color: #008000;
+    font-weight: bold;
+}
+
+/* ----------------------------------------- */
+/*   BOTONES                                 */
+/* ----------------------------------------- */
+
+.bottom-buttons {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn {
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.back {
+    background: #cc4b4b;
+    color: white;
+}
+
+.back:hover {
+    background: #b33c3c;
+}
+
+.pay {
+    background: #43b246;
+    color: white;
+}
+
+.pay:hover {
+    background: #2f9132;
+}

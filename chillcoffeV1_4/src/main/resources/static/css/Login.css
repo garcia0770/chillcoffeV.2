@@ -1,0 +1,179 @@
+/*
+  login.css
+  - Simplificado
+  - Variables al inicio para controlar fácilmente el fondo (ancho, alto, posición, ruta)
+  - Clases en español y botones con clases distintas: .btn-principal, .btn-invitado, .btn-crear
+*/
+
+/* =====================
+   Variables (ajusta aquí)
+   --ruta-fondo   : alternativa para definir la imagen desde CSS (o usar inline en HTML)
+   --fondo-ancho  : controla ancho del fondo (ej: 100%, 150%, 1200px)
+   --fondo-alto   : controla alto del fondo (ej: 100%, auto, 800px)
+   --fondo-pos    : controla encuadre (ej: center 40%)
+   ===================== */
+:root{
+  --ruta-fondo: url('/imagenes/FondoPrueba2.jpg'); /* opcional: si prefieres poner la ruta aquí */
+  --fondo-ancho: 100%;   /* valor por defecto para width del background */
+  --fondo-alto: 100%;    /* valor por defecto para height del background */
+  --fondo-pos: center center;
+  --tarjeta-bg: rgba(255,255,255,0.10);
+  --texto: #f6f0e7;
+  --accento-1: #b97a57;
+  --accento-2: #d1926a;
+  --radio: 12px;
+}
+
+/* =====================
+   Reset mínimo y base
+   ===================== */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter, "Helvetica Neue", Arial, sans-serif;background:#000;color:var(--texto);-webkit-font-smoothing:antialiased}
+
+/* =====================
+   Estructura principal
+   ===================== */
+.contenedor{
+  position:relative;
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  overflow:hidden;
+}
+
+/* =====================
+   Fondo controlable
+   - Usa inline style en HTML o descomenta background-image para control desde CSS
+   - Background-size usa dos valores: ancho y alto (variables arriba)
+   - Si prefieres mantener proporción y cubrir pantalla usa `background-size: cover;`
+   ===================== */
+.fondo{
+  position:fixed;
+  inset:0;
+  z-index:0;               /* detrás del contenido */
+  pointer-events:none;
+  background-repeat:no-repeat;
+  /* Si quieres definir la URL desde CSS en lugar del HTML, descomenta: */
+  /* background-image: var(--ruta-fondo); */
+  background-position: var(--fondo-pos);
+  background-size: var(--fondo-ancho) var(--fondo-alto); /* controla ancho y alto por separado */
+  filter: brightness(1.02) contrast(1.05) saturate(1.05); /* opcional y sutil */
+  min-height:100vh;
+  will-change: background-position, transform;
+}
+
+/* =====================
+   Contenido sobre el fondo
+   ===================== */
+.contenido{
+  position:relative;
+  z-index:5;
+  text-align:center;
+  width:100%;
+  max-width:1100px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:20px;
+  padding:12px;
+}
+
+/* =====================
+   Cabecera / marca
+   ===================== */
+.marca{font-size:40px;margin:0;color:var(--texto);text-shadow:0 4px 12px rgba(0,0,0,0.45)}
+
+/* =====================
+   Tarjeta de login
+   - Fondo semi-transparente para legibilidad
+   ===================== */
+.tarjeta-login{
+  background: var(--tarjeta-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding:28px;
+  border-radius: var(--radio);
+  width:340px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+}
+
+/* Formulario e inputs */
+.form-login{display:flex;flex-direction:column;gap:10px}
+.etiqueta{font-size:13px;text-align:left;color:rgba(246,240,235,0.9)}
+.entrada{width:100%;padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.06);color:var(--texto);outline:none;font-size:14px}
+.entrada:focus{box-shadow:0 6px 18px rgba(185,122,87,0.10);background:rgba(255,255,255,0.08)}
+
+/* =====================
+   Botones con clases distintas
+   - .btn-principal  : acción principal (submit)
+   - .btn-invitado   : acceso rápido invitado
+   - .btn-crear      : crear cuenta / navegación
+   ===================== */
+.btn{
+  display:block;
+  width:100%;
+  padding:12px;
+  border-radius:8px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+  font-size:15px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* gradiente principal */
+.btn-principal{
+  background: linear-gradient(90deg, var(--accento-1), var(--accento-2));
+  color:#fff;
+}
+.btn-principal:hover{ transform: scale(1.03); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+
+/* invitado: estilo discreto */
+.btn-invitado{ background: rgba(255,255,255,0.06); color: var(--texto); }
+.btn-invitado:hover{ transform: translateY(-2px); }
+
+/* crear cuenta: estilo secundario */
+.btn-crear{ background: rgba(255,255,255,0.04); color: var(--texto); }
+
+/* =====================
+   Responsive: cambiar encuadre o tamaño del fondo por dispositivo
+   - Ajusta las variables --fondo-pos, --fondo-ancho y --fondo-alto en media queries
+   ===================== */
+@media (max-width: 900px){
+  .tarjeta-login{ width:92%; max-width:420px; padding:20px }
+  /* ejemplo: mover encuadre vertical en pantallas medias */
+  :root{ --fondo-pos: center 40%; }
+}
+@media (max-width: 480px){
+  .marca{ font-size:28px; }
+  .tarjeta-login{ padding:16px }
+  /* ejemplo: en móvil aumentar ancho del fondo al 120% y altura auto */
+  :root{ --fondo-pos: center 30%; --fondo-ancho: 120%; --fondo-alto: auto; }
+}
+
+/* =====================
+   Notas rápidas (comentadas)
+   - Para que el fondo "se agrande" sin distorsión, sube una versión @2x y úsala en:
+     @media (min-resolution: 2dppx){ .fondo { background-image: url('/imagenes/Fondop@2x.png'); } }
+   - Si prefieres mantener proporción completa y cubrir siempre el viewport, sustituye:
+     background-size: var(--fondo-ancho) var(--fondo-alto);
+     por
+     background-size: cover;
+   - Para definir la imagen solo desde CSS: descomenta background-image: var(--ruta-fondo) en .fondo y elimina el style inline en HTML.
+   ===================== */
+
+
+
+
+
+
+
+
+
+
+
+
+

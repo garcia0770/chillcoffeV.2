@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar contraseña</title>
+    <link rel="stylesheet" th:href="@{/css/Login.css}">
+</head>
+
+<body>
+<div class="contenedor">
+    <div class="fondo" aria-hidden="true" style="background-image: url('/imagenes/FondoPrueba2.jpg');"></div>
+
+    <main class="contenido">
+        <section class="tarjeta-login">
+            <h2>Restablecer contraseña</h2>
+
+            <form th:action="@{/cambiar}" method="post">
+
+                <input type="hidden" name="token" th:value="${token}">
+
+                <label>Nueva contraseña</label>
+                <input type="password" name="password1" class="entrada" required>
+
+                <label>Repetir contraseña</label>
+                <input type="password" name="password2" class="entrada" required>
+
+                <button type="submit" class="btn btn-principal">Cambiar contraseña</button>
+
+                <!-- ERRORES -->
+                <div th:if="${error}" class="error">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <!-- MENSAJE ÉXITO -->
+                <div th:if="${mensaje}" class="mensaje exito">
+                    <p th:text="${mensaje}"></p>
+                </div>
+
+            </form>
+
+            <!-- BOTÓN VOLVER SOLO CUANDO toque -->
+            <div th:if="${volverLogin}">
+                <a th:href="@{/}" class="link-recuperar">Volver al Login</a>
+            </div>
+
+        </section>
+    </main>
+</div>
+</body>
+</html>

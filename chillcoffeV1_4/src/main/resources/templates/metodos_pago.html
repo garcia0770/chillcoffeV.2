@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métodos de Pago | ChillCoffe</title>
+    <link rel="stylesheet" th:href="@{/css/Pago.css}">
+</head>
+<body>
+
+<h1 class="titulo">Métodos de Pago</h1>
+
+<div class="payment-container">
+
+    <form th:action="@{/procesar_pago}" method="post" id="paymentForm">
+
+        <input type="radio" name="pago_apariencia" id="tab-tarjeta" hidden checked>
+        <input type="radio" name="pago_apariencia" id="tab-nequi" hidden>
+
+        <input type="hidden" name="metodoPago" id="metodoPagoInput" value="Tarjeta">
+
+        <div class="payment-tabs">
+            <label for="tab-tarjeta" class="tab-btn" data-method="Tarjeta">💳 Tarjeta</label>
+            <label for="tab-nequi" class="tab-btn" data-method="Nequi">📱 Nequi</label>
+        </div>
+
+        <div class="panels">
+
+            <div class="panel panel-tarjeta">
+                <h3>Pago con Tarjeta</h3>
+                <div class="input-group">
+                    <label for="card-number">Número de tarjeta</label>
+                    <input id="card-number" type="text" placeholder="1234 5678 9012 3456" name="cardNumber">
+                </div>
+
+                <div class="flex">
+                    <div class="input-group half">
+                        <label for="expiry-date">MM/AA</label>
+                        <input id="expiry-date" type="text" placeholder="09/28" name="expiryDate">
+                    </div>
+                    <div class="input-group half">
+                        <label for="cvv">CVV</label>
+                        <input id="cvv" type="text" placeholder="123" name="cvv">
+                    </div>
+                </div>
+
+                <p class="panel-desc">Introduce los datos de tu tarjeta para procesar el pago de manera segura.</p>
+            </div>
+
+            <div class="panel panel-nequi">
+                <h3>Pago con Nequi</h3>
+                <p>Escanea este código QR desde tu aplicación Nequi:</p>
+                <div class="qr-card">
+                    <img th:src="@{/imagenes/qr.png}" alt="QR Nequi">
+                    <p class="qr-text">Escanea y confirma tu pago</p>
+                </div>
+                <p class="panel-desc">Después de escanear, tu pago se procesará automáticamente.</p>
+            </div>
+
+        </div>
+
+
+        <div class="bottom-buttons">
+            <a th:href="@{/user_panel}" class="btn back">⬅ Volver</a>
+            <button type="submit" class="btn pay">agregar tarjeta ✔</button>
+        </div>
+        
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.payment-tabs .tab-btn');
+        const metodoPagoInput = document.getElementById('metodoPagoInput');
+
+        // Función para actualizar el campo oculto
+        function updateMetodoPago(methodName) {
+            metodoPagoInput.value = methodName;
+            console.log('Método de pago seleccionado:', methodName);
+        }
+
+        // 1. Asigna el evento a cada etiqueta (pestaña)
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Obtiene el nombre del método de pago del atributo 'data-method'
+                const methodName = this.getAttribute('data-method');
+                updateMetodoPago(methodName);
+            });
+        });
+
+    });
+</script>
+
+</body>
+</html>

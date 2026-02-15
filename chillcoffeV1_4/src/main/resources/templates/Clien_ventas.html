@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Tienda Virtual - ChillCoffe</title>
+    <link rel="stylesheet" th:href="@{/css/compras.css}"> 
+    <style>
+        /* Estilos CSS mínimos para asegurar la visualización y el modal */
+        .container-tienda { 
+            display: flex; 
+            max-width: 1200px; 
+            margin: 20px auto; 
+            gap: 30px; 
+        }
+        
+        .productos-lista { 
+            flex: 3; 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+            min-height: 200px; 
+        } 
+        
+        .carrito-panel { 
+            flex: 1; 
+            padding: 20px; 
+            border: 1px solid #ccc; 
+            background-color: #f9f9f9; 
+        }
+        
+        .producto-card { 
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            width: 200px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+        }
+        
+        .producto-card h3 { 
+            margin-top: 0; 
+        }
+
+        .carrito-table th, .carrito-table td { 
+            padding: 8px; 
+            border-bottom: 1px solid #eee; 
+            text-align: left;
+        }
+        
+        .carrito-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+        
+        .header-content { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+
+        /* Estilos para el MODAL */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe; 
+            margin: 15% auto; 
+            padding: 20px;
+            border: 1px solid #888; 
+            width: 80%; 
+            max-width: 400px;
+            border-radius: 8px; 
+            text-align: center;
+        }
+        
+        .close { 
+            color: #aaa; 
+            float: right; 
+            font-size: 28px; 
+            font-weight: bold; 
+        }
+        
+        .close:hover, .close:focus { 
+            color: black; 
+            text-decoration: none; 
+            cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+    <header style="background-color: #A0522D; color: white; padding: 15px; text-align: center;">
+        <div class="header-content">
+            <h1 style="margin: 0;">Tienda Virtual</h1>
+            <a th:href="@{/user_panel}" style="background-color: #8B4513; color: white; padding: 8px 15px; text-decoration: none; border-radius: 5px;">← Volver al Panel</a>
+        </div>
+    </header>
+    
+    <div th:if="${mensaje}" style="color: green; text-align: center; margin: 10px 0;" th:text="${mensaje}"></div>
+    <div th:if="${error}" style="color: red; text-align: center; margin: 10px 0;" th:text="${error}"></div>
+
+    <div class="container-tienda">
+        <div class="productos-lista">
+            <h2>Selecciona tus productos</h2>
+            
+            <div th:if="${!#lists.isEmpty(productos)}">
+                <div th:each="producto : ${productos}" class="producto-card">
+                    <h3 th:text="${producto.nombre}">Nombre del Producto</h3>
+                    
+                    <p>
+                        Precio: 
+                        <span th:text="${#numbers.formatDecimal(producto.precio, 1, 'POINT', 0, 'COMMA')} + ' COP'">Precio</span>
+                    </p>
+                    
+                    <div th:switch="${producto.stock != null and producto.stock > 0}">
+                        <p th:case="true">Stock disponible: <span th:text="${producto.stock}"></span></p>
+                        <p th:case="false" style="color: red; font-weight: bold;">AGOTADO</p>
+                    </div>
+
+                    
+                    <form th:action="@{/Clien_ventas/agregar}" method="post" th:if="${producto.stock != null and producto.stock > 0}">
+                        <input type="hidden" name="productoId" th:value="${producto.id}" /> 
+                        <label for="cantidad">Cantidad:</label>
+                        <input type="number" id="cantidad" name="cantidad" value="1" min="1" th:max="${producto.stock}" style="width: 50px;" required>
+                        <button type="submit">Añadir</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div th:if="${#lists.isEmpty(productos)}">
+                <p>No hay productos disponibles en el inventario.</p>
+            </div>
+            
+        </div>
+        
+        <div class="carrito-panel">
+            <h2>Carrito (<span th:text="${#lists.size(carritoItems)}">0</span>)</h2>
+            
+            <div th:if="${#lists.isEmpty(carritoItems)}">
+                <p>No hay productos en el carrito.</p>
+            </div>
+            
+            <div th:unless="${#lists.isEmpty(carritoItems)}">
+                <table class="carrito-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cant.</th>
+                            <th>Subtotal (COP)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${carritoItems}">
+                            <td th:text="${item.nombre}"></td>
+                            <td th:text="${item.cantidad}"></td>
+                            <td th:with="subtotal=${item.precio * item.cantidad}" 
+                                th:text="${#numbers.formatDecimal(subtotal, 1, 'POINT', 0, 'COMMA')}"></td> 
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p style="font-weight: bold; margin-top: 15px;">
+                    Total estimado: 
+                    <span id="total-estimado"
+                        th:with="granTotal=${#aggregates.sum(carritoItems.![precio * cantidad])}" 
+                        th:text="${#numbers.formatDecimal(granTotal, 1, 'POINT', 0, 'COMMA')} + ' COP'"></span>
+                </p>
+                
+                <hr>
+                
+                <button id="btn-abrir-modal" 
+                        style="background-color: #8B4513; color: white; padding: 10px; width: 100%; border: none; cursor: pointer;">
+                    PAGAR (Ver Total)
+                </button>
+                
+                <p style="text-align: center; margin-top: 10px;">
+                    <a th:href="@{/Clien_ventas/limpiar}" style="color: red; text-decoration: none;">Vaciar Carrito</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-pago" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Confirmación de Compra</h3>
+            <p>Tu orden de compra está lista.</p>
+            <p style="font-size: 1.5em; font-weight: bold;">Total a Pagar:</p>
+            <p style="font-size: 2em; color: #8B4513;">$<span id="modal-total">0.00</span> COP</p>
+            
+            <hr>
+            
+            <form id="form-checkout" th:action="@{/Clien_ventas/checkout}" method="post">
+                <button type="submit" style="background-color: green; color: white; padding: 10px 20px; border: none; cursor: pointer;">
+                    Pagar y Finalizar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        var modal = document.getElementById("modal-pago");
+        var btn = document.getElementById("btn-abrir-modal");
+        var span = document.getElementsByClassName("close")[0];
+        
+        btn.onclick = function() {
+            // Llama al endpoint del controlador para obtener el total via AJAX
+            fetch(/*[[@{/Clien_ventas/total}]]*/ '/Clien_ventas/total')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Formato de moneda para Colombia (COP) usando JavaScript Intl API
+                    // Quitamos el símbolo de moneda 'COP' y lo agregamos manualmente al HTML
+                    var formattedTotal = new Intl.NumberFormat('es-CO', { 
+                        style: 'currency', 
+                        currency: 'COP', 
+                        minimumFractionDigits: 2 
+                    }).format(data);
+
+                    // Reemplaza el contenido del span con el valor formateado (quitando el 'COP' del string)
+                    document.getElementById("modal-total").textContent = formattedTotal.replace('COP', '').trim();
+                    
+                    modal.style.display = "block";
+                })
+                .catch(error => {
+                    console.error('Error al obtener el total:', error);
+                    alert('Error al obtener el total del carrito. Por favor, asegúrese de que el endpoint /Clien_ventas/total esté funcionando.');
+                });
+        }
+        
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

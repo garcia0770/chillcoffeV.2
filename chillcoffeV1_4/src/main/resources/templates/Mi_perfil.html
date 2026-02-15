@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${esInvitado} ? 'Perfil de Invitado' : 'Mi Perfil'"></title>
+    <link rel="stylesheet" th:href="@{/css/perfil.css}">
+</head>
+<body>
+
+    <div class="perfil-wrapper">
+
+        <div class="perfil-card">
+
+            <div class="perfil-header">
+                <img th:src="@{https://i.postimg.cc/5N7rpXyX/user.png}" class="foto-perfil">
+                <h1>Mi Perfil</h1>
+                <p class="subtitulo">Gestiona tu información personal</p>
+                
+                <p th:if="${mensaje}" style="color: green; font-weight: bold;" th:text="${mensaje}"></p>
+                <p th:if="${error}" style="color: red; font-weight: bold;" th:text="${error}"></p>
+
+                <p th:if="${esInvitado}" style="color: #c95c4d; font-weight: bold; margin-top: 10px;">
+                    ⚠️ Estás navegando como **Invitado**. Por favor, inicia sesión para editar y guardar tu información.
+                </p>
+            </div>
+
+            <div class="perfil-contenido">
+
+                <form class="perfil-form" th:action="@{/perfil/guardar}" method="post" th:object="${usuario}">
+
+                    <h2 class="seccion-titulo">Editar Información</h2>
+
+                    <input type="hidden" th:field="*{id}" />
+                    
+                    <div class="campo">
+                        <label>Nombre Completo</label>
+                        <input type="text" th:field="*{nombre}" 
+                               placeholder="Ingresa tu nombre"
+                               th:disabled="${esInvitado}">
+                    </div>
+
+                    <div class="campo">
+                        <label>Correo Electrónico</label>
+                        <input type="email" th:field="*{correo}" 
+                               placeholder="correo@example.com"
+                               th:disabled="${esInvitado}">
+                    </div>
+
+                    <div class="campo">
+                        <label>Teléfono</label>
+                        <input type="text" th:field="*{telefono}" 
+                               placeholder="300 000 0000"
+                               th:disabled="${esInvitado}">
+                    </div>
+
+                    <div class="campo">
+                        <label>Dirección</label>
+                        <input type="text" th:field="*{direccion}" 
+                               placeholder="Tu dirección"
+                               th:disabled="${esInvitado}">
+                    </div>
+
+                    <button type="submit" class="btn-guardar" th:disabled="${esInvitado}">Guardar Cambios</button>
+                    
+                    </form>
+                
+                <div class="perfil-vista">
+                    <h2 class="seccion-titulo">Vista Previa de Datos</h2>
+
+                    <div class="preview-item">
+                        <h3>Nombre</h3>
+                        <p class="preview-placeholder" th:text="${usuario.nombre}"></p>
+                    </div>
+
+                    <div class="preview-item">
+                        <h3>Correo</h3>
+                        <p class="preview-placeholder" th:text="${usuario.correo}"></p>
+                    </div>
+                    
+                    <div class="preview-item">
+                        <h3>Teléfono</h3>
+                        <p class="preview-placeholder" th:text="${usuario.telefono}"></p>
+                    </div>
+                    
+                    <div class="preview-item">
+                        <h3>Dirección</h3>
+                        <p class="preview-placeholder" th:text="${usuario.direccion}"></p>
+                    </div>
+                </div>
+            </div>
+
+            <a th:href="@{/user_panel}" class="volver">← Volver al Panel</a> 
+
+        </div>
+
+    </div>
+
+</body>
+</html>

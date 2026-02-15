@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Panel Admin - ChillCoffe</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}" />
+</head>
+<body>
+<header class="topbar">
+    <div class="container topbar-inner">
+        <div class="brand-wrap" aria-hidden="false">
+            <!-- Icono de café inline (escalable, sin depender de archivos externos) -->
+            <svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                <path d="M3 7h14v4a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V7z" fill="#5b2a86" opacity="0.95"/>
+                <path d="M20 8.5a3.5 3.5 0 0 0 0 7" stroke="#5b2a86" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <path d="M8 3c0 .9-.4 1.7-1 2.3C6.4 6 6 6.8 6 7.7" stroke="#4a216a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.9"/>
+            </svg>
+
+            <h1 class="brand">ChillCoffe — Panel Admin</h1>
+        </div>
+
+        <div class="user-actions">
+            <span class="welcome">Bienvenido <strong th:text="${nombre}">Admin</strong></span>
+            <a class="link-logout" href="/logout">Salir</a>
+        </div>
+    </div>
+</header>
+
+<main class="container main-grid">
+    <div th:if="${mensaje}" class="alert" th:text="${mensaje}">Mensaje</div>
+
+    <!-- Barra de navegación a módulos de cafetería -->
+    <nav class="panel" style="grid-column: 1 / -1; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <div style="flex:1;">
+            <strong>Administración de la cafetería</strong>
+            <p class="muted" style="margin:6px 0 0;">Accede rápidamente a cada módulo</p>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+            <a th:href="@{/admin/cupones}" class="btn">Cupones</a>
+            <a th:href="@{/admin/ventas}" class="btn">Ventas</a>
+            <a th:href="@{/admin/inventario}" class="btn">Inventario</a>
+            <a th:href="@{/admin/descuentos}" class="btn">Descuentos</a>
+        </div>
+    </nav>
+
+    <!-- Órdenes Express (anteriormente: Pila/LIFO) -->
+    <section class="panel">
+        <h2 class="panel-title">Órdenes Express (urgentes)</h2>
+        <p class="muted">Órdenes marcadas como urgentes — se atienden primero las más recientes.</p>
+
+        <form th:action="@{/admin/pila/push}" method="post" class="inline-form">
+            <input type="text" name="nombre" placeholder="Descripción de la orden (ej: Café con leche, Mesa 3)" required />
+            <button class="btn primary" type="submit">Agregar orden urgente</button>
+        </form>
+
+        <div class="btn-row">
+            <form th:action="@{/admin/pila/pop}" method="post" class="small-form" onsubmit="return confirm('Atender la orden urgente en top?')">
+                <button class="btn ghost" type="submit">Atender orden urgente</button>
+            </form>
+            <form th:action="@{/admin/pila/clear}" method="post" class="small-form" onsubmit="return confirm('Limpiar todas las órdenes urgentes?')">
+                <button class="btn ghost" type="submit">Limpiar urgentes</button>
+            </form>
+        </div>
+
+        <h3 class="list-title">Órdenes (más recientes → antiguas)</h3>
+        <ul class="list" th:if="${not #lists.isEmpty(pila)}">
+            <li th:each="item : ${pila}">
+                <!-- concatenación correcta usando sintaxis literal de Thymeleaf -->
+                <span class="item-id" th:text="|#${item.id}|">#1</span>
+                <span class="item-name" th:text="${item.nombre}">Café Americano - Mesa 1</span>
+                <!-- CORRECCIÓN: usar #temporals para java.time.* y proteger contra null -->
+                <time class="item-time" th:text="${item.creadoEn != null ? #temporals.format(item.creadoEn, 'dd/MM/yyyy HH:mm:ss') : ''}">ahora</time>
+            </li>
+        </ul>
+        <p class="muted" th:if="${#lists.isEmpty(pila)}">No hay órdenes urgentes</p>
+    </section>
+
+    <!-- Pedidos pendientes (anteriormente: Cola/FIFO) -->
+    <section class="panel">
+        <h2 class="panel-title">Pedidos pendientes</h2>
+        <p class="muted">Pedidos normales en cola — se atienden en orden de llegada.</p>
+
+        <form th:action="@{/admin/cola/enqueue}" method="post" class="inline-form">
+            <input type="text" name="nombre" placeholder="Descripción del pedido (ej: Capuchino, Para llevar)" required />
+            <button class="btn primary" type="submit">Agregar pedido</button>
+        </form>
+
+        <div class="btn-row">
+            <form th:action="@{/admin/cola/dequeue}" method="post" class="small-form" onsubmit="return confirm('Atender el siguiente pedido en cola?')">
+                <button class="btn ghost" type="submit">Atender siguiente pedido</button>
+            </form>
+            <form th:action="@{/admin/cola/clear}" method="post" class="small-form" onsubmit="return confirm('Limpiar toda la cola de pedidos?')">
+                <button class="btn ghost" type="submit">Limpiar cola</button>
+            </form>
+        </div>
+
+        <h3 class="list-title">Pedidos (primero en atender → último)</h3>
+        <ul class="list" th:if="${not #lists.isEmpty(cola)}">
+            <li th:each="item : ${cola}">
+                <span class="item-id" th:text="|#${item.id}|">#1</span>
+                <span class="item-name" th:text="${item.nombre}">Capuchino - Para llevar</span>
+                <!-- CORRECCIÓN: usar #temporals para java.time.* y proteger contra null -->
+                <time class="item-time" th:text="${item.creadoEn != null ? #temporals.format(item.creadoEn, 'dd/MM/yyyy HH:mm:ss') : ''}">ahora</time>
+            </li>
+        </ul>
+        <p class="muted" th:if="${#lists.isEmpty(cola)}">No hay pedidos pendientes</p>
+    </section>
+</main>
+
+<footer class="container footer">
+    <p class="muted">ChillCoffe — Administración • Interfaz de órdenes y pedidos</p>
+</footer>
+
+<script>
+    // Confirmación simple para acciones destructivas (si decides usarla)
+    function confirmAction(message) {
+        return confirm(message || '¿Estás seguro?');
+    }
+</script>
+</body>
+</html>

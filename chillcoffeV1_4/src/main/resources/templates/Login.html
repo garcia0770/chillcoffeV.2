@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ChillCoffe - Iniciar sesión</title>
+    <link rel="stylesheet" th:href="@{/css/Login.css}" />
+</head>
+<body>
+    <div class="contenedor">
+        <div class="fondo" aria-hidden="true" style="background-image: url('/imagenes/FondoPrueba2.jpg');"></div>
+
+        <main class="contenido">
+            <header class="cabecera">
+                <h1 class="marca">☕ ChillCoffe</h1>
+            </header>
+
+            <section class="tarjeta-login" role="region" aria-labelledby="titulo-login">
+                <h2 id="titulo-login">Iniciar Sesión</h2>
+
+                <form class="form-login" th:action="@{/login}" method="post" novalidate>
+                    <label for="usuario" class="etiqueta">Usuario (Correo)</label>
+                    
+                    <input id="usuario" name="username" class="entrada" type="text" required />
+
+                    <label for="clave" class="etiqueta">Contraseña</label>
+                    
+                    <input id="clave" name="password" class="entrada" type="password" required />
+
+                    <button type="submit" class="btn btn-principal">Entrar</button>
+
+                    <div th:if="${error}" class="error">
+                        <p th:text="${error}"></p>
+                    </div>
+                </form>
+
+                <a th:href="@{/recuperar}" class="link-recuperar">¿Olvidaste tu contraseña?</a>
+
+                <a th:href="@{/invitado}" class="btn btn-invitado" role="button">Entrar como invitado</a>
+
+                <button type="button" class="btn btn-crear" onclick="location.href='/registro'">Crear cuenta</button>
+
+            </section>
+        </main>
+    </div>
+</body>
+</html>

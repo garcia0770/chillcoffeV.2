@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Usuario | ChillCoffe</title>
+    <link rel="stylesheet" th:href="@{/css/Panel_usuario.css}"> 
+</head>
+
+<body>
+
+<header class="header">
+    <h1>Panel de Usuario</h1>
+    <div class="logout-btn">
+        <a th:href="@{/logout}" class="btn-logout">Cerrar Sesión</a>
+    </div>
+</header>
+
+<div class="panel-container">
+
+    <a th:href="@{/Clien_ventas}" class="panel-card"> 
+        <img th:src="@{https://cdn-icons-png.flaticon.com/512/1170/1170678.png}" alt="Mis Compras">
+        <h3>Mis Compras</h3>
+        <p>Revisa tu carrito y los productos que has agregado.</p>
+    </a>
+
+    <a th:href="@{/perfil}" class="panel-card"> 
+        <img th:src="@{https://cdn-icons-png.flaticon.com/512/747/747376.png}" alt="Mi Perfil">
+        <h3>Mi Perfil</h3>
+        <p>Edita tu información personal.</p>
+    </a>
+
+    <a th:href="@{/pagos}" class="panel-card">
+        <img th:src="@{https://tse4.mm.bing.net/th/id/OIP.92eSyAHPd_SevD39AhGlrQHaHa?pid=Api&P=0&h=180.png}" alt="Pagos">
+        <h3>Métodos de Pago</h3>
+        <p>Selecciona cómo deseas pagar tu pedido.</p>
+    </a>
+
+</div>
+
+</body>
+</html>
